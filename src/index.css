@@ -52,6 +52,14 @@ All colors MUST be HSL.
 
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
+    /* Motion gradients */
+    --gradient-motion-1: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 50%, hsl(var(--primary-glow)) 100%);
+    --gradient-motion-2: linear-gradient(225deg, hsl(var(--accent)) 0%, hsl(var(--primary)) 50%, hsl(var(--accent)) 100%);
+    --gradient-animated: linear-gradient(-45deg, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--primary-glow)), hsl(var(--primary)));
+    --gradient-orb-1: radial-gradient(circle at 20% 80%, hsl(var(--primary) / 0.3) 0%, transparent 50%);
+    --gradient-orb-2: radial-gradient(circle at 80% 20%, hsl(var(--accent) / 0.3) 0%, transparent 50%);
+    --gradient-orb-3: radial-gradient(circle at 40% 40%, hsl(var(--primary-glow) / 0.2) 0%, transparent 50%);
+
     --radius: 0.75rem;
 
     --sidebar-background: 240 5.9% 10%;

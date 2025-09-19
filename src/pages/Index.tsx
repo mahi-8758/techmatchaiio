@@ -119,8 +119,46 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Navigation */}
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 z-0">
+        {/* Main animated gradient background */}
+        <div 
+          className="absolute inset-0 opacity-30"
+          style={{
+            background: 'var(--gradient-animated)',
+            backgroundSize: '400% 400%',
+            animation: 'gradient-shift 8s ease-in-out infinite'
+          }}
+        />
+        
+        {/* Floating gradient orbs */}
+        <div 
+          className="absolute top-20 left-20 w-96 h-96 rounded-full animate-float-slow"
+          style={{
+            background: 'var(--gradient-orb-1)',
+            filter: 'blur(40px)'
+          }}
+        />
+        <div 
+          className="absolute bottom-20 right-20 w-80 h-80 rounded-full animate-float-medium"
+          style={{
+            background: 'var(--gradient-orb-2)',
+            filter: 'blur(35px)'
+          }}
+        />
+        <div 
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full animate-pulse-glow"
+          style={{
+            background: 'var(--gradient-orb-3)',
+            filter: 'blur(30px)'
+          }}
+        />
+      </div>
+
+      {/* Content with higher z-index */}
+      <div className="relative z-10">
+        {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 backdrop-blur-lg bg-background/80 border-b border-border">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -544,6 +582,7 @@ const Index = () => {
           </div>
         </div>
       </footer>
+      </div>
     </div>
   );
 };
