@@ -30,7 +30,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Send email to the specified address
     const emailResponse = await resend.emails.send({
       from: "TechMatch AI <onboarding@resend.dev>",
-      to: ["240530101076@uktech.net.in"],
+      to: ["kumarmahi8758@gmail.com"],
       subject: `Contact Form: ${subject}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
