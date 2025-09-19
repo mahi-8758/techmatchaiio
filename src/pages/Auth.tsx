@@ -44,7 +44,7 @@ const Auth = () => {
 
         {/* User Type Selection */}
         <div className="text-center space-y-4">
-          <h1 className="text-2xl font-bold">Welcome to SkillMatch AI</h1>
+          <h1 className="text-2xl font-bold">Welcome to TechMatch</h1>
           <Tabs value={userType} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="candidate" asChild>

@@ -44,7 +44,7 @@ const Index = () => {
           <nav className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-lg"></div>
-              <span className="text-xl font-bold">SkillMatch AI</span>
+              <span className="text-xl font-bold">TechMatch</span>
             </div>
             <div className="flex items-center space-x-4">
               <Link to="/auth">
@@ -72,10 +72,10 @@ const Index = () => {
                   <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"> Skills</span>,
                   Not Resumes
                 </h1>
-                <p className="text-xl text-muted-foreground leading-relaxed">
-                  Our AI-powered platform matches candidates to roles through practical skill assessments, 
-                  eliminating bias and finding the perfect fit every time.
-                </p>
+            <p className="text-xl text-muted-foreground leading-relaxed">
+              Our AI-powered platform matches candidates to roles through practical skill assessments, 
+              eliminating bias and finding the perfect fit every time.
+            </p>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
@@ -117,7 +117,7 @@ const Index = () => {
       <section className="py-20 px-6 bg-muted/30">
         <div className="container mx-auto">
           <div className="text-center space-y-4 mb-16">
-            <h2 className="text-3xl font-bold">How SkillMatch AI Works</h2>
+            <h2 className="text-3xl font-bold">How TechMatch Works</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Revolutionary recruitment that focuses on what candidates can actually do
             </p>
@@ -148,7 +148,7 @@ const Index = () => {
             <CardContent className="p-12 text-center">
               <h2 className="text-3xl font-bold mb-4">Ready to Transform Your Hiring?</h2>
               <p className="text-xl mb-8 opacity-90">
-                Join thousands of companies using SkillMatch AI to find exceptional talent
+                Join thousands of companies using TechMatch to find exceptional talent
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link to="/auth?type=employer">
@@ -173,10 +173,10 @@ const Index = () => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
               <div className="w-6 h-6 bg-gradient-to-r from-primary to-accent rounded"></div>
-              <span className="font-semibold">SkillMatch AI</span>
+              <span className="font-semibold">TechMatch</span>
             </div>
             <div className="text-sm text-muted-foreground">
-              © 2024 SkillMatch AI. All rights reserved.
+              © 2024 TechMatch. All rights reserved.
             </div>
           </div>
         </div>

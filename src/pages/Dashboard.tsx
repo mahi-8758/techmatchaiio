@@ -305,7 +305,7 @@ const Dashboard = () => {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-lg"></div>
-                <span className="text-xl font-bold">SkillMatch AI</span>
+                <span className="text-xl font-bold">TechMatch</span>
               </div>
               <Badge variant="secondary">Dashboard</Badge>
             </div>
