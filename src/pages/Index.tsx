@@ -487,13 +487,28 @@ const Index = () => {
             </div>
             
             <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Assessments</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Analytics</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Integrations</a></li>
-              </ul>
+              <h4 className="font-semibold mb-4">Contact</h4>
+              <div className="space-y-3 text-muted-foreground">
+                <div className="flex items-center space-x-2">
+                  <Mail className="h-4 w-4" />
+                  <a href="mailto:kumarmahi8758@gmail.com" className="hover:text-foreground transition-colors">
+                    kumarmahi8758@gmail.com
+                  </a>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Phone className="h-4 w-4" />
+                  <a href="tel:+916204317911" className="hover:text-foreground transition-colors">
+                    +91 620 431 7911
+                  </a>
+                </div>
+                <div className="flex items-start space-x-2">
+                  <MapPin className="h-4 w-4 mt-0.5" />
+                  <div>
+                    <p>JB Institute of Technology</p>
+                    <p>Dehradun, UK - 248197</p>
+                  </div>
+                </div>
+              </div>
             </div>
             
             <div>
@@ -501,8 +516,8 @@ const Index = () => {
               <ul className="space-y-2 text-muted-foreground">
                 <li><a href="#" className="hover:text-foreground transition-colors">About</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Contact</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Privacy</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Terms</a></li>
               </ul>
             </div>
             
