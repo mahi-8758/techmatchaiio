@@ -1,17 +1,23 @@
-import { useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Users, Briefcase } from "lucide-react";
+import { ArrowLeft, Users, Briefcase, AlertCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const userType = searchParams.get("type") || "candidate";
   const [isSignUp, setIsSignUp] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -20,6 +26,18 @@ const Auth = () => {
     company: ""
   });
 
+  useEffect(() => {
+    // Check if user is already authenticated
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/dashboard");
+      }
+    };
+    
+    checkAuth();
+  }, [navigate]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
       ...prev,
@@ -27,10 +45,64 @@ const Auth = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Authentication logic will be implemented with Supabase
-    console.log("Form submitted:", { ...formData, userType, isSignUp });
+    setError("");
+    setLoading(true);
+
+    // Validation
+    if (isSignUp && formData.password !== formData.confirmPassword) {
+      setError("Passwords don't match");
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      if (isSignUp) {
+        const redirectUrl = `${window.location.origin}/dashboard`;
+        
+        const { error: signUpError } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            emailRedirectTo: redirectUrl,
+            data: {
+              user_type: userType,
+              full_name: formData.fullName,
+              ...(userType === "employer" && { company_name: formData.company })
+            }
+          }
+        });
+
+        if (signUpError) throw signUpError;
+
+        toast({
+          title: "Account created successfully!",
+          description: "You can now sign in to your account.",
+        });
+        
+        setIsSignUp(false);
+      } else {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (signInError) throw signInError;
+
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
+      setError(error.message || "An error occurred");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -81,6 +153,13 @@ const Auth = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <div className="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
+                  <AlertCircle className="h-4 w-4" />
+                  {error}
+                </div>
+              )}
+
               {isSignUp && (
                 <div className="space-y-2">
                   <Label htmlFor="fullName">Full Name</Label>
@@ -152,8 +231,8 @@ const Auth = () => {
                 </div>
               )}
 
-              <Button type="submit" variant="hero" size="lg" className="w-full">
-                {isSignUp ? "Create Account" : "Sign In"}
+              <Button type="submit" variant="hero" size="lg" className="w-full" disabled={loading}>
+                {loading ? "Loading..." : (isSignUp ? "Create Account" : "Sign In")}
               </Button>
             </form>
 

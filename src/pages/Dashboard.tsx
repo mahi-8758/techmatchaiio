@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Brain, 
   Code, 
@@ -17,11 +19,40 @@ import {
   Star,
   ArrowRight,
   CheckCircle,
-  Play
+  Play,
+  LogOut
 } from "lucide-react";
 
 const Dashboard = () => {
-  const [userType] = useState<"candidate" | "employer">("candidate"); // This will come from auth context
+  const { user, signOut } = useAuth();
+  const [userProfile, setUserProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+        
+        if (data) {
+          setUserProfile(data);
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, [user]);
+
+  const userType = userProfile?.user_type || "candidate";
 
   // Mock data for candidate dashboard
   const skillAssessments = [
@@ -312,12 +343,19 @@ const Dashboard = () => {
             <div className="flex items-center space-x-4">
               <Avatar>
                 <AvatarImage src="" />
-                <AvatarFallback>JD</AvatarFallback>
+                <AvatarFallback>
+                  {userProfile?.full_name ? userProfile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'U'}
+                </AvatarFallback>
               </Avatar>
               <div className="text-right">
-                <p className="text-sm font-medium">John Doe</p>
-                <p className="text-xs text-muted-foreground">Frontend Developer</p>
+                <p className="text-sm font-medium">{userProfile?.full_name || user?.email}</p>
+                <p className="text-xs text-muted-foreground">
+                  {userType === 'candidate' ? 'Candidate' : 'Employer'}
+                </p>
               </div>
+              <Button variant="ghost" size="sm" onClick={signOut}>
+                <LogOut className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         </div>
@@ -326,7 +364,9 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Welcome back, John!</h1>
+          <h1 className="text-3xl font-bold mb-2">
+            Welcome back, {userProfile?.full_name?.split(' ')[0] || 'User'}!
+          </h1>
           <p className="text-muted-foreground">Track your progress and discover new opportunities</p>
         </div>
 
