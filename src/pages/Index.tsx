@@ -360,7 +360,7 @@ const Index = () => {
                         </div>
                         <div>
                           <h4 className="font-semibold mb-1">Email</h4>
-                          <p className="text-muted-foreground">240530101076@uktech.net.in</p>
+                          <p className="text-muted-foreground">kumarmahi8758@gmail.com</p>
                         </div>
                       </div>
                       
@@ -370,7 +370,7 @@ const Index = () => {
                         </div>
                         <div>
                           <h4 className="font-semibold mb-1">Phone</h4>
-                          <p className="text-muted-foreground">+1 (555) 123-4567</p>
+                          <p className="text-muted-foreground">+91 620 431 7911</p>
                         </div>
                       </div>
                       
@@ -381,8 +381,8 @@ const Index = () => {
                         <div>
                           <h4 className="font-semibold mb-1">Office</h4>
                           <p className="text-muted-foreground">
-                            123 Tech Street<br />
-                            San Francisco, CA 94105
+                            JB Institute of Technology<br />
+                            Dehradun, UK - 248197
                           </p>
                         </div>
                       </div>
