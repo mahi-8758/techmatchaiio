@@ -64,10 +64,3 @@ This project is built with:
 
 Simply open [Lovable](https://lovable.dev/projects/5703d7ed-46b8-42c9-a359-ddf8bd1443d9) and click on Share -> Publish.
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
