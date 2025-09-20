@@ -2,8 +2,30 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Brain, Target, Shield, Zap, Sparkles, Users, TrendingUp, Globe, ChevronRight, Check, Star } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCallback } from "react";
 
 const Index = () => {
+  const smoothScrollTo = useCallback((elementId: string) => {
+    const element = document.getElementById(elementId);
+    if (element) {
+      // Add fade effect to current view
+      document.body.style.transition = 'opacity 0.3s ease-in-out';
+      document.body.style.opacity = '0.7';
+      
+      setTimeout(() => {
+        element.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+        
+        // Restore opacity with a slight delay
+        setTimeout(() => {
+          document.body.style.opacity = '1';
+        }, 300);
+      }, 150);
+    }
+  }, []);
+
   const features = [
     {
       icon: Brain,
@@ -113,10 +135,25 @@ const Index = () => {
             </div>
             
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
-              <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">How It Works</a>
-              <a href="#testimonials" className="text-muted-foreground hover:text-foreground transition-colors">Reviews</a>
-              <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">Contact Us</Link>
+              <button 
+                onClick={() => smoothScrollTo('features')} 
+                className="text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-105"
+              >
+                Features
+              </button>
+              <button 
+                onClick={() => smoothScrollTo('how-it-works')} 
+                className="text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-105"
+              >
+                How It Works
+              </button>
+              <button 
+                onClick={() => smoothScrollTo('testimonials')} 
+                className="text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-105"
+              >
+                Reviews
+              </button>
+              <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-105">Contact Us</Link>
             </div>
 
             <div className="flex items-center space-x-3">
