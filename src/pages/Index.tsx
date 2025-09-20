@@ -1,66 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Brain, Target, Shield, Zap, Sparkles, Users, TrendingUp, Globe, ChevronRight, Check, Star, Mail, Phone, MapPin } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Brain, Target, Shield, Zap, Sparkles, Users, TrendingUp, Globe, ChevronRight, Check, Star } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
-  const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: ""
-  });
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      const { data, error } = await supabase.functions.invoke('send-contact-email', {
-        body: formData
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Message Sent!",
-        description: "Thank you for your message. We'll get back to you soon.",
-      });
-
-      // Reset form
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        message: ""
-      });
-    } catch (error) {
-      console.error('Error sending message:', error);
-      toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
   const features = [
     {
       icon: Brain,
@@ -373,144 +316,9 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="py-20 bg-muted/30">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold mb-4">Get in Touch</h2>
-              <p className="text-xl text-muted-foreground">
-                Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-12">
-              {/* Contact Info */}
-              <div className="space-y-8">
-                <Card className="border-border bg-card">
-                  <CardContent className="p-8">
-                    <h3 className="text-2xl font-semibold mb-6">Contact Information</h3>
-                    
-                    <div className="space-y-6">
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                          <Mail className="h-6 w-6 text-primary" />
-                        </div>
-                        <div>
-                          <h4 className="font-semibold mb-1">Email</h4>
-                          <p className="text-muted-foreground">kumarmahi8758@gmail.com</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                          <Phone className="h-6 w-6 text-primary" />
-                        </div>
-                        <div>
-                          <h4 className="font-semibold mb-1">Phone</h4>
-                          <p className="text-muted-foreground">+91 620 431 7911</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                          <MapPin className="h-6 w-6 text-primary" />
-                        </div>
-                        <div>
-                          <h4 className="font-semibold mb-1">Office</h4>
-                          <p className="text-muted-foreground">
-                            JB Institute of Technology<br />
-                            Dehradun, UK - 248197
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Contact Form */}
-              <Card className="border-border bg-card">
-                <CardContent className="p-8">
-                  <h3 className="text-2xl font-semibold mb-6">Send us a Message</h3>
-                  
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Name *</Label>
-                        <Input
-                          id="name"
-                          name="name"
-                          type="text"
-                          placeholder="Your full name"
-                          value={formData.name}
-                          onChange={handleInputChange}
-                          required
-                          disabled={isSubmitting}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email *</Label>
-                        <Input
-                          id="email"
-                          name="email"
-                          type="email"
-                          placeholder="your.email@example.com"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          required
-                          disabled={isSubmitting}
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="subject">Subject *</Label>
-                      <Input
-                        id="subject"
-                        name="subject"
-                        type="text"
-                        placeholder="What's this about?"
-                        value={formData.subject}
-                        onChange={handleInputChange}
-                        required
-                        disabled={isSubmitting}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="message">Message *</Label>
-                      <Textarea
-                        id="message"
-                        name="message"
-                        placeholder="Tell us more about your inquiry..."
-                        className="min-h-[120px]"
-                        value={formData.message}
-                        onChange={handleInputChange}
-                        required
-                        disabled={isSubmitting}
-                      />
-                    </div>
-                    
-                    <Button 
-                      type="submit" 
-                      size="lg" 
-                      className="w-full bg-primary hover:bg-primary/90"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? "Sending..." : "Send Message"}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
-      <footer className="border-t border-border bg-card/50">
-        <div className="container mx-auto px-6 py-12">
+      <footer className="py-16 bg-muted/30 border-t border-border">
+        <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-4 gap-8">
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
@@ -520,65 +328,43 @@ const Index = () => {
                 <span className="text-xl font-bold">TechMatch AI</span>
               </div>
               <p className="text-muted-foreground">
-                Revolutionizing hiring with AI-powered skill assessment and smart candidate matching.
+                Revolutionizing hiring with AI-powered skill assessments and intelligent candidate matching.
               </p>
             </div>
-            
-            <div>
-              <h4 className="font-semibold mb-4">Contact</h4>
-              <div className="space-y-3 text-muted-foreground">
-                <div className="flex items-center space-x-2">
-                  <Mail className="h-4 w-4" />
-                  <a href="mailto:kumarmahi8758@gmail.com" className="hover:text-foreground transition-colors">
-                    kumarmahi8758@gmail.com
-                  </a>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Phone className="h-4 w-4" />
-                  <a href="tel:+916204317911" className="hover:text-foreground transition-colors">
-                    +91 620 431 7911
-                  </a>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <MapPin className="h-4 w-4 mt-0.5" />
-                  <div>
-                    <p>JB Institute of Technology</p>
-                    <p>Dehradun, UK - 248197</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
+
             <div>
               <h4 className="font-semibold mb-4">Company</h4>
               <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">About</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">About Us</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Privacy</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Terms</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Press</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Contact</a></li>
               </ul>
             </div>
-            
+
+            <div>
+              <h4 className="font-semibold mb-4">Product</h4>
+              <ul className="space-y-2 text-muted-foreground">
+                <li><a href="#features" className="hover:text-foreground transition-colors">Features</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Pricing</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Security</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Enterprise</a></li>
+              </ul>
+            </div>
+
             <div>
               <h4 className="font-semibold mb-4">Resources</h4>
               <ul className="space-y-2 text-muted-foreground">
-                <li><Link to="/docs" className="hover:text-foreground transition-colors">Documentation</Link></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Blog</a></li>
+                <li><Link to="/documentation" className="hover:text-foreground transition-colors">Documentation</Link></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">API Reference</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Status</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">API</a></li>
               </ul>
             </div>
           </div>
-          
-          <div className="border-t border-border mt-12 pt-8 flex items-center justify-between">
-            <p className="text-muted-foreground text-sm">
-              © 2024 TechMatch AI. All rights reserved.
-            </p>
-            <div className="flex items-center space-x-6 text-sm text-muted-foreground">
-              <a href="#" className="hover:text-foreground transition-colors">Terms</a>
-              <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
-              <a href="#" className="hover:text-foreground transition-colors">Cookies</a>
-            </div>
+
+          <div className="mt-12 pt-8 border-t border-border text-center text-muted-foreground">
+            <p>&copy; 2024 TechMatch AI. All rights reserved.</p>
           </div>
         </div>
       </footer>
