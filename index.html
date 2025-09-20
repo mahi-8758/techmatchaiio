@@ -12,9 +12,10 @@
     <link rel="preconnect" href="https://storage.googleapis.com" crossorigin>
     <link rel="dns-prefetch" href="https://storage.googleapis.com">
     
-    <!-- Preload critical resources -->
+    <!-- Preload critical resources with non-blocking CSS -->
     <link rel="modulepreload" href="/src/main.tsx">
-    <link rel="stylesheet" href="/src/index.css">
+    <link rel="preload" href="/src/index.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/src/index.css"></noscript>
 
     <meta property="og:title" content="TechMatch - Hire Based on Skills, Not Resumes" />
     <meta property="og:description" content="AI-powered recruitment platform that matches candidates to job roles based on practical skill assessments, eliminating bias and finding the perfect fit every time." />
