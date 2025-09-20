@@ -173,7 +173,7 @@ const Index = () => {
               <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
               <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">How It Works</a>
               <a href="#testimonials" className="text-muted-foreground hover:text-foreground transition-colors">Reviews</a>
-              <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
+              <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">Contact Us</Link>
             </div>
 
             <div className="flex items-center space-x-3">
@@ -562,7 +562,7 @@ const Index = () => {
             <div>
               <h4 className="font-semibold mb-4">Resources</h4>
               <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">Documentation</a></li>
+                <li><Link to="/docs" className="hover:text-foreground transition-colors">Documentation</Link></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Help Center</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">API Reference</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Status</a></li>

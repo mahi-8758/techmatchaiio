@@ -9,6 +9,8 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import EmployerDashboard from "./pages/EmployerDashboard";
+import ContactUs from "./pages/ContactUs";
+import Documentation from "./pages/Documentation";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +25,8 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/contact" element={<ContactUs />} />
+            <Route path="/docs" element={<Documentation />} />
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
