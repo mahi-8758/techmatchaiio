@@ -193,7 +193,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_default_assessments_for_user: {
+        Args: { user_id_param: string }
+        Returns: undefined
+      }
     }
     Enums: {
       experience_level:

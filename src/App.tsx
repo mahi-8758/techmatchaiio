@@ -14,6 +14,8 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const EmployerDashboard = lazy(() => import("./pages/EmployerDashboard"));
 const ContactUs = lazy(() => import("./pages/ContactUs"));
 const Documentation = lazy(() => import("./pages/Documentation"));
+const Assessment = lazy(() => import("./pages/Assessment"));
+const AssessmentResult = lazy(() => import("./pages/AssessmentResult"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -46,6 +48,16 @@ const App = () => (
               <Route path="/employer-dashboard" element={
                 <ProtectedRoute>
                   <EmployerDashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/assessment/:assessmentId" element={
+                <ProtectedRoute>
+                  <Assessment />
+                </ProtectedRoute>
+              } />
+              <Route path="/assessment-result/:assessmentId" element={
+                <ProtectedRoute>
+                  <AssessmentResult />
                 </ProtectedRoute>
               } />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

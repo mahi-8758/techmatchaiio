@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Brain, 
   Code, 
@@ -20,123 +22,177 @@ import {
   ArrowRight,
   CheckCircle,
   Play,
-  LogOut
+  LogOut,
+  Video,
+  ExternalLink
 } from "lucide-react";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [userProfile, setUserProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [assessments, setAssessments] = useState<any[]>([]);
+  const [jobMatches, setJobMatches] = useState<any[]>([]);
+  const [stats, setStats] = useState({
+    assessmentsCompleted: 0,
+    totalAssessments: 0,
+    averageScore: 0,
+    jobMatches: 0,
+    profileViews: 0
+  });
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchDashboardData = async () => {
       if (!user) return;
       
       try {
-        const { data, error } = await supabase
+        // Fetch user profile
+        const { data: profileData } = await supabase
           .from('profiles')
           .select('*')
           .eq('user_id', user.id)
           .single();
         
-        if (data) {
-          setUserProfile(data);
+        if (profileData) {
+          setUserProfile(profileData);
         }
+
+        // Fetch skill assessments
+        const { data: assessmentData } = await supabase
+          .from('skill_assessments')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (assessmentData) {
+          setAssessments(assessmentData);
+        }
+
+        // Fetch job postings for matches (simplified matching)
+        const { data: jobData } = await supabase
+          .from('job_postings')
+          .select('*')
+          .eq('status', 'active')
+          .limit(10);
+
+        if (jobData) {
+          // Simple matching based on user skills
+          const userSkills = profileData?.skills || [];
+          const matchedJobs = jobData.map(job => {
+            const requiredSkills = job.required_skills || [];
+            const matchingSkills = userSkills.filter((skill: string) => 
+              requiredSkills.some((req: string) => 
+                req.toLowerCase().includes(skill.toLowerCase())
+              )
+            );
+            const matchScore = Math.min(95, Math.max(20, (matchingSkills.length / Math.max(requiredSkills.length, 1)) * 100 + Math.random() * 20));
+            
+            return {
+              ...job,
+              match: Math.round(matchScore),
+              matchingSkills
+            };
+          }).filter(job => job.match > 50)
+            .sort((a, b) => b.match - a.match);
+
+          setJobMatches(matchedJobs);
+        }
+
+        // Calculate stats
+        const completedAssessments = assessmentData?.filter(a => a.status === 'completed') || [];
+        const avgScore = completedAssessments.length > 0 
+          ? Math.round(completedAssessments.reduce((sum, a) => sum + (a.score || 0), 0) / completedAssessments.length)
+          : 0;
+
+        setStats({
+          assessmentsCompleted: completedAssessments.length,
+          totalAssessments: assessmentData?.length || 0,
+          averageScore: avgScore,
+          jobMatches: jobData?.length || 0,
+          profileViews: Math.floor(Math.random() * 100) + 20 // Simulated for now
+        });
+
       } catch (error) {
-        console.error('Error fetching profile:', error);
+        console.error('Error fetching dashboard data:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load dashboard data",
+          variant: "destructive"
+        });
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUserProfile();
-  }, [user]);
+    fetchDashboardData();
+  }, [user, toast]);
 
   const userType = userProfile?.user_type || "candidate";
 
-  // Mock data for candidate dashboard
-  const skillAssessments = [
+  // YouTube learning videos
+  const learningVideos = [
     {
       id: 1,
-      title: "JavaScript Fundamentals",
-      description: "Test your knowledge of modern JavaScript concepts",
-      duration: "45 min",
-      difficulty: "Intermediate",
-      icon: Code,
-      status: "completed",
-      score: 85
+      title: "JavaScript ES6 Features",
+      channel: "Programming with Mosh",
+      videoId: "NCwa_xi0Uuc",
+      duration: "1:38:49",
+      views: "2.1M",
+      category: "JavaScript"
     },
     {
       id: 2,
-      title: "React & TypeScript",
-      description: "Build a real-world component with TypeScript",
-      duration: "60 min",
-      difficulty: "Advanced",
-      icon: Code,
-      status: "available",
-      score: null
+      title: "React Tutorial for Beginners",
+      channel: "Programming with Mosh",
+      videoId: "SqcY0GlETPk",
+      duration: "1:48:43",
+      views: "1.8M",
+      category: "React"
     },
     {
       id: 3,
-      title: "Database Design",
-      description: "Design and optimize database schemas",
-      duration: "50 min",
-      difficulty: "Intermediate",
-      icon: Database,
-      status: "locked",
-      score: null
+      title: "TypeScript Course for Beginners",
+      channel: "Programming with Mosh",
+      videoId: "d56mG7DezGs",
+      duration: "1:44:29",
+      views: "953K",
+      category: "TypeScript"
     },
     {
       id: 4,
-      title: "UI/UX Design Principles",
-      description: "Create user-centered design solutions",
-      duration: "40 min",
-      difficulty: "Beginner",
-      icon: Palette,
-      status: "available",
-      score: null
+      title: "Database Design Course",
+      channel: "freeCodeCamp.org",
+      videoId: "ztHopE5Wnpc",
+      duration: "8:34:27",
+      views: "1.2M",
+      category: "Database"
     }
   ];
 
-  const jobMatches = [
-    {
-      id: 1,
-      title: "Senior Frontend Developer",
-      company: "TechCorp Inc.",
-      location: "Remote",
-      match: 94,
-      salary: "$95k - $120k",
-      skills: ["React", "TypeScript", "Node.js"],
-      posted: "2 days ago"
-    },
-    {
-      id: 2,
-      title: "Full Stack Engineer",
-      company: "StartupXYZ",
-      location: "San Francisco, CA",
-      match: 87,
-      salary: "$110k - $140k",
-      skills: ["JavaScript", "Python", "AWS"],
-      posted: "1 week ago"
-    },
-    {
-      id: 3,
-      title: "React Developer",
-      company: "Digital Solutions",
-      location: "Austin, TX",
-      match: 82,
-      salary: "$80k - $100k",
-      skills: ["React", "Redux", "Jest"],
-      posted: "3 days ago"
-    }
-  ];
+  const startAssessment = async (assessmentId: string) => {
+    navigate(`/assessment/${assessmentId}`);
+  };
 
-  const stats = {
-    assessmentsCompleted: 3,
-    totalAssessments: 12,
-    averageScore: 88,
-    jobMatches: 15,
-    profileViews: 47
+  const viewResults = (assessmentId: string) => {
+    navigate(`/assessment-result/${assessmentId}`);
+  };
+
+  const getAssessmentIcon = (assessmentType: string) => {
+    switch (assessmentType?.toLowerCase()) {
+      case 'javascript':
+      case 'react':
+      case 'typescript':
+        return Code;
+      case 'database':
+        return Database;
+      case 'design':
+      case 'ui/ux':
+        return Palette;
+      default:
+        return Brain;
+    }
   };
 
   const renderCandidateDashboard = () => (
@@ -193,9 +249,10 @@ const Dashboard = () => {
       </div>
 
       <Tabs defaultValue="assessments" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="assessments">Skill Assessments</TabsTrigger>
           <TabsTrigger value="matches">Job Matches</TabsTrigger>
+          <TabsTrigger value="learning">Learning Videos</TabsTrigger>
         </TabsList>
 
         <TabsContent value="assessments" className="space-y-6">
@@ -211,54 +268,70 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
-                {skillAssessments.map((assessment) => (
-                  <Card key={assessment.id} className="border-l-4 border-l-primary">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <div className="p-2 bg-muted rounded-lg">
-                            <assessment.icon className="h-5 w-5" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold">{assessment.title}</h3>
-                            <p className="text-sm text-muted-foreground">{assessment.description}</p>
-                            <div className="flex items-center gap-4 mt-2">
-                              <Badge variant="secondary" className="text-xs">
-                                <Clock className="h-3 w-3 mr-1" />
-                                {assessment.duration}
-                              </Badge>
-                              <Badge variant="outline" className="text-xs">
-                                {assessment.difficulty}
-                              </Badge>
-                              {assessment.status === "completed" && assessment.score && (
-                                <Badge variant="default" className="text-xs bg-success text-success-foreground">
-                                  <CheckCircle className="h-3 w-3 mr-1" />
-                                  {assessment.score}%
+                {assessments.length > 0 ? assessments.map((assessment) => {
+                  const IconComponent = getAssessmentIcon(assessment.assessment_type);
+                  return (
+                    <Card key={assessment.id} className="border-l-4 border-l-primary">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <div className="p-2 bg-muted rounded-lg">
+                              <IconComponent className="h-5 w-5" />
+                            </div>
+                            <div>
+                              <h3 className="font-semibold">{assessment.title}</h3>
+                              <p className="text-sm text-muted-foreground">{assessment.description}</p>
+                              <div className="flex items-center gap-4 mt-2">
+                                <Badge variant="secondary" className="text-xs">
+                                  <Clock className="h-3 w-3 mr-1" />
+                                  {assessment.duration_minutes} min
                                 </Badge>
-                              )}
+                                <Badge variant="outline" className="text-xs">
+                                  {assessment.difficulty_level}
+                                </Badge>
+                                {assessment.status === "completed" && assessment.score && (
+                                  <Badge variant="default" className="text-xs bg-success text-success-foreground">
+                                    <CheckCircle className="h-3 w-3 mr-1" />
+                                    {assessment.score}%
+                                  </Badge>
+                                )}
+                              </div>
                             </div>
                           </div>
+                          <div>
+                            {assessment.status === "completed" ? (
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => viewResults(assessment.id)}
+                              >
+                                View Results
+                              </Button>
+                            ) : assessment.status === "available" ? (
+                              <Button 
+                                variant="hero" 
+                                size="sm"
+                                onClick={() => startAssessment(assessment.id)}
+                              >
+                                <Play className="h-4 w-4 mr-2" />
+                                Start
+                              </Button>
+                            ) : (
+                              <Button variant="ghost" size="sm" disabled>
+                                Locked
+                              </Button>
+                            )}
+                          </div>
                         </div>
-                        <div>
-                          {assessment.status === "completed" ? (
-                            <Button variant="ghost" size="sm">
-                              View Results
-                            </Button>
-                          ) : assessment.status === "available" ? (
-                            <Button variant="hero" size="sm">
-                              <Play className="h-4 w-4 mr-2" />
-                              Start
-                            </Button>
-                          ) : (
-                            <Button variant="ghost" size="sm" disabled>
-                              Locked
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  );
+                }) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Brain className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No assessments available yet. Check back soon!</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -277,7 +350,7 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {jobMatches.map((job) => (
+                {jobMatches.length > 0 ? jobMatches.map((job) => (
                   <Card key={job.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-6">
                       <div className="flex justify-between items-start">
@@ -285,11 +358,11 @@ const Dashboard = () => {
                           <div>
                             <h3 className="font-semibold text-lg">{job.title}</h3>
                             <div className="flex items-center gap-2 text-muted-foreground">
-                              <span>{job.company}</span>
+                              <span>{job.company_name}</span>
                               <span>•</span>
-                              <span>{job.location}</span>
+                              <span>{job.location || 'Location not specified'}</span>
                               <span>•</span>
-                              <span>{job.posted}</span>
+                              <span>{new Date(job.created_at).toLocaleDateString()}</span>
                             </div>
                           </div>
                           
@@ -300,12 +373,20 @@ const Dashboard = () => {
                                 {job.match}%
                               </Badge>
                             </div>
-                            <span className="text-sm font-medium text-primary">{job.salary}</span>
+                            {job.salary_min && job.salary_max && (
+                              <span className="text-sm font-medium text-primary">
+                                ${job.salary_min.toLocaleString()} - ${job.salary_max.toLocaleString()}
+                              </span>
+                            )}
                           </div>
                           
                           <div className="flex flex-wrap gap-2">
-                            {job.skills.map((skill) => (
-                              <Badge key={skill} variant="secondary" className="text-xs">
+                            {(job.required_skills || []).slice(0, 5).map((skill: string) => (
+                              <Badge 
+                                key={skill} 
+                                variant={job.matchingSkills?.includes(skill) ? "default" : "secondary"} 
+                                className="text-xs"
+                              >
                                 {skill}
                               </Badge>
                             ))}
@@ -314,6 +395,67 @@ const Dashboard = () => {
                         
                         <Button variant="professional" size="sm" className="ml-4">
                           Apply <ArrowRight className="h-4 w-4 ml-1" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Briefcase className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No job matches found. Complete more assessments to improve your matches!</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="learning" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Video className="h-5 w-5" />
+                Learning Videos
+              </CardTitle>
+              <CardDescription>
+                Curated video content to boost your skills
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2">
+                {learningVideos.map((video) => (
+                  <Card key={video.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="space-y-3">
+                        <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+                          <iframe
+                            src={`https://www.youtube.com/embed/${video.videoId}`}
+                            title={video.title}
+                            className="w-full h-full rounded-lg"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-sm">{video.title}</h3>
+                          <p className="text-xs text-muted-foreground">{video.channel}</p>
+                          <div className="flex items-center gap-4 mt-2">
+                            <Badge variant="secondary" className="text-xs">
+                              {video.category}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">{video.duration}</span>
+                            <span className="text-xs text-muted-foreground">{video.views} views</span>
+                          </div>
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full"
+                          onClick={() => window.open(`https://www.youtube.com/watch?v=${video.videoId}`, '_blank')}
+                        >
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          Watch on YouTube
                         </Button>
                       </div>
                     </CardContent>
