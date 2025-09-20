@@ -256,32 +256,123 @@ const Dashboard = () => {
         </TabsList>
 
         <TabsContent value="assessments" className="space-y-6">
+          {/* Assessment Categories */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <Card className="text-center border-2 border-dashed border-primary/20 hover:border-primary/40 transition-colors">
+              <CardContent className="p-4">
+                <Code className="h-8 w-8 mx-auto mb-2 text-primary" />
+                <h3 className="font-semibold text-sm">Programming</h3>
+                <p className="text-xs text-muted-foreground">{assessments.filter(a => ['javascript', 'react', 'python'].includes(a.assessment_type)).length} tests</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="text-center border-2 border-dashed border-secondary/20 hover:border-secondary/40 transition-colors">
+              <CardContent className="p-4">
+                <Database className="h-8 w-8 mx-auto mb-2 text-secondary" />
+                <h3 className="font-semibold text-sm">Database</h3>
+                <p className="text-xs text-muted-foreground">{assessments.filter(a => ['database', 'sql'].includes(a.assessment_type)).length} tests</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="text-center border-2 border-dashed border-accent/20 hover:border-accent/40 transition-colors">
+              <CardContent className="p-4">
+                <Palette className="h-8 w-8 mx-auto mb-2 text-accent" />
+                <h3 className="font-semibold text-sm">Design</h3>
+                <p className="text-xs text-muted-foreground">{assessments.filter(a => ['design', 'ui-ux'].includes(a.assessment_type)).length} tests</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="text-center border-2 border-dashed border-muted-foreground/20 hover:border-muted-foreground/40 transition-colors">
+              <CardContent className="p-4">
+                <Brain className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                <h3 className="font-semibold text-sm">System Design</h3>
+                <p className="text-xs text-muted-foreground">{assessments.filter(a => a.assessment_type === 'system-design').length} tests</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Assessment Progress Overview */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Your Progress
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Overall Completion</span>
+                  <span className="text-sm text-muted-foreground">
+                    {stats.assessmentsCompleted}/{stats.totalAssessments} completed
+                  </span>
+                </div>
+                <Progress value={(stats.assessmentsCompleted / Math.max(stats.totalAssessments, 1)) * 100} className="h-2" />
+                
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-primary">{stats.averageScore}%</p>
+                    <p className="text-xs text-muted-foreground">Avg Score</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-secondary">{stats.assessmentsCompleted}</p>
+                    <p className="text-xs text-muted-foreground">Completed</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-accent">{stats.totalAssessments - stats.assessmentsCompleted}</p>
+                    <p className="text-xs text-muted-foreground">Remaining</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-muted-foreground">#{Math.ceil(Math.random() * 1000)}</p>
+                    <p className="text-xs text-muted-foreground">Global Rank</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Available Assessments */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Brain className="h-5 w-5" />
-                Available Assessments
+                Skill Assessments
               </CardTitle>
               <CardDescription>
-                Complete skill assessments to improve your job matches
+                Complete assessments to showcase your skills and improve job matches
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
                 {assessments.length > 0 ? assessments.map((assessment) => {
                   const IconComponent = getAssessmentIcon(assessment.assessment_type);
+                  const isCompleted = assessment.status === "completed";
+                  const isPracticeMode = assessment.assessment_type && Math.random() > 0.7; // Random practice mode availability
+                  
                   return (
-                    <Card key={assessment.id} className="border-l-4 border-l-primary">
+                    <Card key={assessment.id} className={`border-l-4 ${
+                      isCompleted ? 'border-l-green-500' : 
+                      assessment.status === 'in_progress' ? 'border-l-yellow-500' :
+                      'border-l-primary'
+                    } hover:shadow-md transition-shadow`}>
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-4">
-                            <div className="p-2 bg-muted rounded-lg">
-                              <IconComponent className="h-5 w-5" />
+                            <div className={`p-3 rounded-lg ${
+                              isCompleted ? 'bg-green-100 dark:bg-green-900' : 'bg-muted'
+                            }`}>
+                              <IconComponent className={`h-6 w-6 ${
+                                isCompleted ? 'text-green-600 dark:text-green-400' : ''
+                              }`} />
                             </div>
-                            <div>
-                              <h3 className="font-semibold">{assessment.title}</h3>
-                              <p className="text-sm text-muted-foreground">{assessment.description}</p>
-                              <div className="flex items-center gap-4 mt-2">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h3 className="font-semibold">{assessment.title}</h3>
+                                {isCompleted && <CheckCircle className="h-4 w-4 text-green-500" />}
+                              </div>
+                              <p className="text-sm text-muted-foreground mb-3">{assessment.description}</p>
+                              
+                              <div className="flex items-center gap-4 flex-wrap">
                                 <Badge variant="secondary" className="text-xs">
                                   <Clock className="h-3 w-3 mr-1" />
                                   {assessment.duration_minutes} min
@@ -289,50 +380,141 @@ const Dashboard = () => {
                                 <Badge variant="outline" className="text-xs">
                                   {assessment.difficulty_level}
                                 </Badge>
+                                <Badge variant="outline" className="text-xs capitalize">
+                                  {assessment.assessment_type?.replace('-', ' ')}
+                                </Badge>
                                 {assessment.status === "completed" && assessment.score && (
-                                  <Badge variant="default" className="text-xs bg-success text-success-foreground">
-                                    <CheckCircle className="h-3 w-3 mr-1" />
+                                  <Badge variant="default" className="text-xs bg-green-600 text-white">
+                                    <Star className="h-3 w-3 mr-1" />
                                     {assessment.score}%
+                                  </Badge>
+                                )}
+                                {assessment.status === "in_progress" && (
+                                  <Badge variant="default" className="text-xs bg-yellow-600 text-white">
+                                    <Clock className="h-3 w-3 mr-1" />
+                                    In Progress
                                   </Badge>
                                 )}
                               </div>
                             </div>
                           </div>
-                          <div>
+                          
+                          <div className="flex flex-col gap-2">
                             {assessment.status === "completed" ? (
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={() => viewResults(assessment.id)}
-                              >
-                                View Results
-                              </Button>
+                              <>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => viewResults(assessment.id)}
+                                >
+                                  View Results
+                                </Button>
+                                {isPracticeMode && (
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => startAssessment(assessment.id)}
+                                  >
+                                    Practice Mode
+                                  </Button>
+                                )}
+                              </>
                             ) : assessment.status === "available" ? (
                               <Button 
                                 variant="hero" 
                                 size="sm"
                                 onClick={() => startAssessment(assessment.id)}
+                                className="min-w-[100px]"
                               >
                                 <Play className="h-4 w-4 mr-2" />
-                                Start
+                                Start Test
+                              </Button>
+                            ) : assessment.status === "in_progress" ? (
+                              <Button 
+                                variant="secondary" 
+                                size="sm"
+                                onClick={() => startAssessment(assessment.id)}
+                                className="min-w-[100px]"
+                              >
+                                <Play className="h-4 w-4 mr-2" />
+                                Continue
                               </Button>
                             ) : (
                               <Button variant="ghost" size="sm" disabled>
+                                <Clock className="h-4 w-4 mr-2" />
                                 Locked
                               </Button>
                             )}
                           </div>
                         </div>
+
+                        {/* Progress bar for completed assessments */}
+                        {assessment.status === "completed" && assessment.score && (
+                          <div className="mt-4 pt-3 border-t">
+                            <div className="flex items-center justify-between text-xs mb-1">
+                              <span>Performance</span>
+                              <span>{assessment.score}%</span>
+                            </div>
+                            <Progress 
+                              value={assessment.score} 
+                              className="h-2"
+                            />
+                          </div>
+                        )}
+
+                        {/* Recommendation for incomplete assessments */}
+                        {assessment.status === "available" && (
+                          <div className="mt-4 pt-3 border-t">
+                            <p className="text-xs text-muted-foreground">
+                              💡 Complete this assessment to unlock new job opportunities
+                            </p>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   );
                 }) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Brain className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No assessments available yet. Check back soon!</p>
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Brain className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                    <h3 className="text-lg font-semibold mb-2">No Assessments Available</h3>
+                    <p className="mb-4">Assessments are being prepared for you. Check back soon!</p>
+                    <Button variant="outline" onClick={() => window.location.reload()}>
+                      Refresh Page
+                    </Button>
                   </div>
                 )}
               </div>
+
+              {/* Quick Action Cards */}
+              {assessments.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 pt-6 border-t">
+                  <Card className="bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20">
+                    <CardContent className="p-4 text-center">
+                      <Brain className="h-8 w-8 mx-auto mb-2 text-primary" />
+                      <h3 className="font-semibold mb-1">Practice Mode</h3>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        Take unlimited practice tests to improve your skills
+                      </p>
+                      <Button variant="outline" size="sm" className="w-full">
+                        Browse Practice Tests
+                      </Button>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-gradient-to-r from-secondary/5 to-accent/5 border-secondary/20">
+                    <CardContent className="p-4 text-center">
+                      <TrendingUp className="h-8 w-8 mx-auto mb-2 text-secondary" />
+                      <h3 className="font-semibold mb-1">Skill Analysis</h3>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        Get detailed insights about your strengths and weaknesses
+                      </p>
+                      <Button variant="outline" size="sm" className="w-full">
+                        View Analysis
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
