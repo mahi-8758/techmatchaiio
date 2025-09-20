@@ -364,7 +364,7 @@ const Index = () => {
           </div>
 
           <div className="mt-12 pt-8 border-t border-border text-center text-muted-foreground">
-            <p>&copy; 2024 TechMatch AI. All rights reserved.</p>
+            <p>&copy; 2025 TechMatch AI. All rights reserved.</p>
           </div>
         </div>
       </footer>
